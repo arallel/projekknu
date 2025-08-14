@@ -102,7 +102,7 @@ class DashboardController extends GetxController {
     ];
   }
 
-  void refreshData() {
+  Future<void> refreshData() async {
     loadDashboardData();
     Get.snackbar(
       'Refreshed',
