@@ -1,11 +1,14 @@
 // controllers/dashboard_controller.dart
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_vlc_player/flutter_vlc_player.dart';
+import 'package:http/http.dart' as http;
 import 'dart:math';
 import 'package:path_provider/path_provider.dart';
+import 'package:projekknu/routes/apiendpoint.dart';
 
 class DashboardController extends GetxController {
   RxString streamUrl = "".obs;
@@ -16,12 +19,13 @@ class DashboardController extends GetxController {
     liveCameraController = controller;
   }
 
-  RxList<Map<String, dynamic>> recentActivities = <Map<String, dynamic>>[].obs;
+  final recentActivities = <Map<String, dynamic>>[].obs;
   RxList<Map<String, dynamic>> systemStats = <Map<String, dynamic>>[].obs;
 
   @override
   void onInit() {
     super.onInit();
+    fetchData();
     loadDashboardData();
     setupSystemStats();
   }
@@ -44,23 +48,41 @@ class DashboardController extends GetxController {
     }
   }
 
+  Future<void> fetchData() async {
+    try {
+      isLoading(true);
+
+      // Ganti dengan endpoint Flask kamu
+      final response = await http.get(Uri.parse(ApiEndpoints.getrecentalert));
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        final alerts = data['alerts'] as List;
+
+        recentActivities.clear();
+        for (var item in alerts) {
+          recentActivities.add({
+            'title': 'Fight Detected',
+            'subtitle':
+                'Confidence: ${(item['confidence'] * 100).toStringAsFixed(1)}%',
+            'time': item['timestamp_readable'],
+            'type': 'alert',
+            'icon': Icons.security,
+            'image_url': item['image_url'],
+          });
+        }
+      }
+    } catch (e) {
+      print("Error fetching alerts: $e");
+    } finally {
+      isLoading(false);
+    }
+  }
+
   void loadDashboardData() {
     isLoading.value = true;
 
-    // Simulasi data aktivitas terbaru
-    recentActivities.value = [
-      {
-        'title': 'Fighting Detected',
-        'subtitle': 'Camera 1',
-        'time': '2 minutes ago',
-        'icon': Icons.videocam,
-        'type': 'alert',
-      },
-    ];
-
-    Future.delayed(Duration(seconds: 1), () {
-      isLoading.value = false;
-    });
+    fetchData();
   }
 
   void setupSystemStats() {
@@ -85,7 +107,9 @@ class DashboardController extends GetxController {
     Get.snackbar(
       'Refreshed',
       'Dashboard data updated',
-      snackPosition: SnackPosition.BOTTOM,
+      snackPosition: SnackPosition.TOP,
+      backgroundColor: Colors.green.withOpacity(0.8),
+      colorText: Colors.white,
       duration: Duration(seconds: 2),
     );
   }

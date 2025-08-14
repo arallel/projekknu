@@ -228,34 +228,35 @@ class DashboardPage extends StatelessWidget {
                 child: Stack(
                   children: [
                     // Live stream
-                    MjpegView(
-                      uri: ApiEndpoints.livepreview,
-                      timeout: const Duration(seconds: 60),
-                      loadingWidget:
-                          (context) => const Center(
-                            child: CircularProgressIndicator(
-                              color: Colors.blueAccent,
-                            ),
-                          ),
-                      errorWidget:
-                          (context) => const Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  Icons.error_outline,
-                                  color: Colors.redAccent,
-                                  size: 48,
-                                ),
-                                SizedBox(height: 8),
-                                Text(
-                                  "Gagal memuat stream",
-                                  style: TextStyle(color: Colors.redAccent),
-                                ),
-                              ],
-                            ),
-                          ),
-                    ),
+                    // MjpegView(
+                    //   uri: ApiEndpoints.livepreview,
+                    //   timeout: const Duration(seconds: 60),
+                    //   loadingWidget:
+                    //       (context) => const Center(
+                    //         child: CircularProgressIndicator(
+                    //           color: Colors.blueAccent,
+                    //         ),
+                    //       ),
+                    //   errorWidget:
+                    //       (context) => const Center(
+                    //         child: Column(
+                    //           mainAxisAlignment: MainAxisAlignment.center,
+                    //           children: [
+                    //             Icon(
+                    //               Icons.error_outline,
+                    //               color: Colors.redAccent,
+                    //               size: 48,
+                    //             ),
+                    //             SizedBox(height: 8),
+                    //             Text(
+                    //               "Gagal memuat stream",
+                    //               style: TextStyle(color: Colors.redAccent),
+                    //             ),
+                    //           ],
+                    //         ),
+                    //       ),
+                    // ),
+                    LiveCameraWidget(streamUrl: ""),
                     // Overlay label "LIVE"
                     Positioned(
                       bottom: 10,
@@ -289,20 +290,24 @@ class DashboardPage extends StatelessWidget {
   }
 
   Widget _buildRecentActivities() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Recent Report',
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: Colors.grey[800],
+    return Obx(() {
+      // Jika tidak ada data, jangan tampilkan apa-apa
+      if (controller.recentActivities.isEmpty) {
+        return SizedBox.shrink(); // Tidak ada elemen yang ditampilkan
+      }
+
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Recent Report',
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: Colors.grey[800],
+            ),
           ),
-        ),
-        SizedBox(height: 12),
-        Obx(
-          () => ListView.separated(
+          ListView.separated(
             shrinkWrap: true,
             physics: NeverScrollableScrollPhysics(),
             itemCount: controller.recentActivities.length,
@@ -312,44 +317,58 @@ class DashboardPage extends StatelessWidget {
               return _buildActivityCard(activity);
             },
           ),
-        ),
-      ],
-    );
+        ],
+      );
+    });
   }
 
   Widget _buildActivityCard(Map<String, dynamic> activity) {
-    Color getTypeColor(String type) {
-      switch (type) {
-        case 'alert':
-          return Colors.red;
-        case 'warning':
-          return Colors.orange;
-        case 'success':
-          return Colors.green;
-        default:
-          return Colors.blue;
-      }
-    }
-
     return Container(
-      padding: EdgeInsets.all(16),
+      padding: EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: Colors.grey.withOpacity(0.1)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.05),
+            blurRadius: 6,
+            offset: Offset(0, 2),
+          ),
+        ],
       ),
       child: Row(
         children: [
-          Container(
-            padding: EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: getTypeColor(activity['type']).withOpacity(0.1),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Icon(
-              activity['icon'],
-              color: getTypeColor(activity['type']),
-              size: 20,
+          // Gambar Thumbnail
+          ClipRRect(
+            borderRadius: BorderRadius.circular(8),
+            child: Image.network(
+              activity['image_url'],
+              width: 60,
+              height: 60,
+              fit: BoxFit.cover,
+              loadingBuilder: (context, child, loadingProgress) {
+                if (loadingProgress == null) return child;
+                return Container(
+                  width: 60,
+                  height: 60,
+                  color: Colors.grey[300],
+                  child: Center(
+                    child: SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    ),
+                  ),
+                );
+              },
+              errorBuilder:
+                  (context, error, stackTrace) => Container(
+                    width: 60,
+                    height: 60,
+                    color: Colors.grey[300],
+                    child: Icon(Icons.error, color: Colors.red, size: 24),
+                  ),
             ),
           ),
           SizedBox(width: 12),
@@ -360,7 +379,7 @@ class DashboardPage extends StatelessWidget {
                 Text(
                   activity['title'],
                   style: TextStyle(
-                    fontWeight: FontWeight.w600,
+                    fontWeight: FontWeight.bold,
                     fontSize: 14,
                     color: Colors.grey[800],
                   ),
@@ -370,13 +389,21 @@ class DashboardPage extends StatelessWidget {
                   activity['subtitle'],
                   style: TextStyle(color: Colors.grey[600], fontSize: 12),
                 ),
+                SizedBox(height: 4),
+                Row(
+                  children: [
+                    Icon(Icons.access_time, size: 12, color: Colors.grey[500]),
+                    SizedBox(width: 4),
+                    Text(
+                      activity['time'],
+                      style: TextStyle(color: Colors.grey[500], fontSize: 11),
+                    ),
+                  ],
+                ),
               ],
             ),
           ),
-          Text(
-            activity['time'],
-            style: TextStyle(color: Colors.grey[500], fontSize: 11),
-          ),
+          Icon(Icons.chevron_right, color: Colors.grey[400], size: 18),
         ],
       ),
     );

@@ -98,7 +98,7 @@ class _CapturePageState extends State<CapturePage> {
           Get.snackbar(
             "Fighting detected",
             "Will be reported to the police",
-            snackPosition: SnackPosition.BOTTOM,
+            snackPosition: SnackPosition.TOP,
             backgroundColor: Colors.green,
             colorText: Colors.white,
           );
@@ -106,7 +106,7 @@ class _CapturePageState extends State<CapturePage> {
           Get.snackbar(
             "No fighting detected",
             "Safe area, no fighting",
-            snackPosition: SnackPosition.BOTTOM,
+            snackPosition: SnackPosition.TOP,
             backgroundColor: Colors.blue,
             colorText: Colors.white,
           );
@@ -120,7 +120,7 @@ class _CapturePageState extends State<CapturePage> {
         Get.snackbar(
           'Error',
           "Upload failed with status: ${response.statusCode}",
-          snackPosition: SnackPosition.BOTTOM,
+          snackPosition: SnackPosition.TOP,
           backgroundColor: Colors.red,
           colorText: Colors.white,
         );
@@ -134,7 +134,7 @@ class _CapturePageState extends State<CapturePage> {
       Get.snackbar(
         'Error',
         e.toString(),
-        snackPosition: SnackPosition.BOTTOM,
+        snackPosition: SnackPosition.TOP,
         backgroundColor: Colors.red,
         colorText: Colors.white,
       );
