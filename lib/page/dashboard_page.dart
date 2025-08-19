@@ -47,10 +47,7 @@ class DashboardPage extends StatelessWidget {
 
   Widget _buildHeader(double screenWidth) {
     return Padding(
-      padding: EdgeInsets.only(
-        top: screenWidth < 600 ? 32 : 64, // jarak header lebih lega
-        bottom: 8,
-      ),
+      padding: EdgeInsets.only(top: screenWidth < 600 ? 32 : 64, bottom: 8),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -77,15 +74,31 @@ class DashboardPage extends StatelessWidget {
               ],
             ),
           ),
-          Container(
-            decoration: BoxDecoration(
-              color: Colors.blue[50],
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: IconButton(
-              icon: Icon(Icons.refresh, color: Colors.blue[700]),
-              onPressed: () => controller.refreshData(),
-            ),
+          Row(
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.blue[50],
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: IconButton(
+                  icon: Icon(Icons.refresh, color: Colors.blue[700]),
+                  onPressed: () => controller.refreshData(),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.grey[200],
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: IconButton(
+                  icon: Icon(Icons.settings, color: Colors.grey[800]),
+                  onPressed: () => Get.toNamed(RouteNames.settingPage),
+                  tooltip: "Settings",
+                ),
+              ),
+            ],
           ),
         ],
       ),

@@ -2,6 +2,7 @@ import 'package:flutter/animation.dart';
 import 'package:get/get.dart';
 import 'package:get/get_navigation/src/routes/default_transitions.dart'
     as get_transition;
+import '../page/api_setting_page.dart';
 import '../page/capture_page.dart';
 import '../page/dashboard_page.dart';
 import '../page/live_camera_page.dart';
@@ -24,6 +25,12 @@ class AppPages {
     GetPage(
       name: RouteNames.capturePage,
       page: () => CapturePage(),
+      curve: Curves.easeInOut,
+      transition: Transition.rightToLeft,
+    ),
+    GetPage(
+      name: RouteNames.settingPage,
+      page: () => ApiSettingsPage(),
       curve: Curves.easeInOut,
       transition: Transition.rightToLeft,
     ),

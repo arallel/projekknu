@@ -1,8 +1,14 @@
 class ApiEndpoints {
-  static const baseUrl = 'http://192.168.1.8:5000';
+  // Gunakan late agar bisa diinisialisasi nanti
+  static late String _baseUrl;
 
-  // * AUTH
-  static const detect = '$baseUrl/detect';
-  static const livepreview = '$baseUrl/snapshot';
-  static const getrecentalert = '$baseUrl/getrecentalerts';
+  // Setter untuk mengubah base URL
+  static void setBaseUrl(String url) {
+    _baseUrl = url;
+  }
+
+  // Getter untuk URL yang sudah dimodifikasi
+  static String get detect => '$_baseUrl/detect';
+  static String get livepreview => '$_baseUrl/snapshot';
+  static String get getrecentalert => '$_baseUrl/getrecentalerts';
 }

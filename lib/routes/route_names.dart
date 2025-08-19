@@ -3,4 +3,5 @@ class RouteNames {
   static const homeScreen = '/home-screen';
   static const livePreview = '/live-preview';
   static const capturePage = '/capture-view';
+  static const settingPage = '/setting-view';
 }
